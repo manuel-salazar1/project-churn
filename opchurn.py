@@ -21,6 +21,9 @@ import scipy.stats as stats
 # Monthly charges and churn plot
 
 def get_monthly_charges_plot(train):
+    '''
+    insert train df
+    '''
     # isolating active customers for ttest
     no_churn = train[train.churn == 'No']
     
@@ -42,6 +45,9 @@ def get_monthly_charges_plot(train):
 # Monthly charges and churn t-test
 
 def get_monthly_charges_ttest(train):
+    '''
+    insert train df for monthly charges and churn ttest
+    '''
     # setting alpha (confidence level)
     alpha = 0.05
     
@@ -54,6 +60,7 @@ def get_monthly_charges_ttest(train):
     # initiating ttest
     t, p = stats.ttest_1samp(churned.monthly_charges, overall_mean)
     
+    # print values
     print(f't = {t:.4}')
     print(f'p = {p/2:.4}')
     
@@ -72,6 +79,9 @@ def get_monthly_charges_ttest(train):
 # Internet service type and churn plot
 
 def get_internet_service_plot(train):
+    '''
+    insert train df
+    '''
     # create observed for chi^2 test
     observed = pd.crosstab(train.internet_service_type, train.churn)
     
@@ -90,6 +100,9 @@ def get_internet_service_plot(train):
 # Internet service type and churn chi^2 test 
 
 def get_internet_service_chi2(train):
+    '''
+    insert train df for chi^2 test between internet service and churn
+    '''
 
     #set alpha
     alpha = 0.05
@@ -119,6 +132,9 @@ def get_internet_service_chi2(train):
 # Tenure and churn t-test
 
 def get_tenure_ttest(train):
+    '''
+    insert train df for tenure and churn ttest
+    '''
     
     # setting alpha
     alpha = 0.05
@@ -148,6 +164,9 @@ def get_tenure_ttest(train):
 # Contract type and churn chi^2 test
 
 def get_contract_type_chi2(train):
+    '''
+    insert train df for contract type and churn chi^2 test
+    '''
     # set alpha
     alpha = 0.05
     
@@ -225,6 +244,12 @@ def Xy_train_val_test(train, validate, test, target_variable):
 # Best random forest model function
 
 def rand_forest_model(X_train, y_train, X_validate, y_validate):
+    '''
+    insert:
+    X_train, y_train, X_validate, y_validate
+    -------------
+    will run rf model
+    '''
     # best model from multiple iterations
     rf = RandomForestClassifier(random_state=123, min_samples_leaf=3, max_depth=8)
     rf.fit(X_train, y_train)
@@ -244,6 +269,12 @@ def rand_forest_model(X_train, y_train, X_validate, y_validate):
 # Best decision tree model function
 
 def decision_tree_model(X_train, y_train, X_validate, y_validate):
+    '''
+    insert:
+    X_train, y_train, X_validate, y_validate
+    --------------
+    will run decision tree model
+    '''
     clf = DecisionTreeClassifier(max_depth=5)
     clf.fit(X_train, y_train)
     
@@ -261,6 +292,12 @@ def decision_tree_model(X_train, y_train, X_validate, y_validate):
 # Best logistic regression model function
 
 def log_reg_model(X_train, y_train, X_validate, y_validate):
+    '''
+    insert:
+    X_train, y_train, X_validate, y_validate
+    ---------------
+    will run logit model
+    '''
     logit = LogisticRegression()
     logit.fit(X_train, y_train)
     
@@ -278,6 +315,12 @@ def log_reg_model(X_train, y_train, X_validate, y_validate):
 
 
 def best_model(X_train, y_train, X_validate, y_validate, X_test, y_test):
+    '''
+    insert:
+    X_train, y_train, X_validate, y_validate, X_test, y_test
+    --------------
+    will return rf
+    '''
     rf = RandomForestClassifier(random_state=123, min_samples_leaf=3, max_depth=8)
     rf.fit(X_train, y_train)
     
