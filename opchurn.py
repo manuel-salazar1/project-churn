@@ -16,6 +16,7 @@ import seaborn as sns
 import scipy.stats as stats
 
 
+####### EXPLORE #######
 
 # Monthly charges and churn plot
 
@@ -171,6 +172,146 @@ def get_contract_type_chi2(train):
 
 
 # -------------------------------------------------------------------------------------
+
+
+
+######## MODELING ########
+
+
+# create variable for columns I want to drop for model
+# drop_cols is a global variable and will be called in for xy_train_val_test function
+
+drop_cols = ['senior_citizen', 'total_charges', 'gender_Male', 'partner_Yes', 'dependents_Yes', 'phone_service_Yes'
+            , 'multiple_lines_No phone service', 'multiple_lines_Yes', 'online_security_No internet service'
+            , 'online_security_Yes', 'online_backup_No internet service', 'online_backup_Yes'
+            , 'device_protection_No internet service', 'device_protection_Yes', 'streaming_tv_No internet service'
+            , 'streaming_tv_Yes', 'streaming_movies_No internet service', 'streaming_movies_Yes'
+            , 'paperless_billing_Yes', 'payment_type_Credit card (automatic)'
+            , 'payment_type_Electronic check', 'payment_type_Mailed check']
+
+
+
+# create function to initiate X_y train, validate, test
+def Xy_train_val_test(train, validate, test, target_variable):
+    """
+    input train, validate, test, after using split function()
+    input target_variable as string
+    drop_cols formatted as: ['col1', 'col2', 'etc'] for multiple columns
+        This function will drop all 'object' columns. Identify additional 
+        columns you want to drop and insert 1 column as a string or multiple
+        columns in a list of strings.
+    X_train, X_validate, X_test, y_train, y_validate, y_test
+    """
+    
+    baseline_accuracy = train[target_variable].value_counts().max() / train[target_variable].value_counts().sum()
+    print(f'Baseline Accuracy: {baseline_accuracy:.2%}')
+    
+    X_train = train.select_dtypes(exclude=['object']).drop(columns=[target_variable]).drop(columns=drop_cols)
+    X_validate = validate.select_dtypes(exclude=['object']).drop(columns=[target_variable]).drop(columns=drop_cols)
+    X_test = test.select_dtypes(exclude=['object']).drop(columns=[target_variable]).drop(columns=drop_cols)
+    
+    y_train = train[target_variable]
+    y_validate = validate[target_variable]
+    y_test = test[target_variable]
+    
+    return X_train, X_validate, X_test, y_train, y_validate, y_test
+
+
+
+
+# -------------------------------------------------------------------------------------
+
+
+# Best random forest model function
+
+def rand_forest_model(X_train, y_train, X_validate, y_validate):
+    # best model from multiple iterations
+    rf = RandomForestClassifier(random_state=123, min_samples_leaf=3, max_depth=8)
+    rf.fit(X_train, y_train)
+    
+    train_acc = rf.score(X_train, y_train)
+    val_acc = rf.score(X_validate, y_validate)
+    print(f'   Train Accuracy: {train_acc:.2%}')
+    print(f'Validate Accuracy: {val_acc:.2%}')
+
+
+
+
+
+# -------------------------------------------------------------------------------------
+
+
+# Best decision tree model function
+
+def decision_tree_model(X_train, y_train, X_validate, y_validate):
+    clf = DecisionTreeClassifier(max_depth=5)
+    clf.fit(X_train, y_train)
+    
+    train_acc2 = clf.score(X_train, y_train)
+    val_acc2 = clf.score(X_validate, y_validate)
+    print(f'   Train Accuracy: {train_acc2:.2%}')
+    print(f'Validate Accuracy: {val_acc2:.2%}')
+
+
+
+
+
+# -------------------------------------------------------------------------------------
+
+# Best logistic regression model function
+
+def log_reg_model(X_train, y_train, X_validate, y_validate):
+    logit = LogisticRegression()
+    logit.fit(X_train, y_train)
+    
+    train_acc3 = logit.score(X_train, y_train)
+    val_acc3 = logit.score(X_validate, y_validate)
+    print(f'   Train Accuracy: {train_acc3:.2%}')
+    print(f'Validate Accuracy: {val_acc3:.2%}')
+
+
+
+
+# -------------------------------------------------------------------------------------
+
+# Best model function
+
+
+def best_model(X_train, y_train, X_validate, y_validate, X_test, y_test):
+    rf = RandomForestClassifier(random_state=123, min_samples_leaf=3, max_depth=8)
+    rf.fit(X_train, y_train)
+    
+    train_acc = rf.score(X_train, y_train)
+    val_acc = rf.score(X_validate, y_validate)
+    test_acc = rf.score(X_test, y_test)
+    print('Baseline Accuracy: 73.47%')
+    print(f'   Train Accuracy: {train_acc:.2%}')
+    print(f'Validate Accuracy: {val_acc:.2%}')
+    print(f'   Test Accuracry: {test_acc:.2%}')
+    return rf
+
+
+
+
+# -------------------------------------------------------------------------------------
+
+# Create csv function
+
+def create_csv(X_test, test, rf):
+    """
+    Export the predictions and prediction probabilities of a given test set into a CSV file.
+    """
+    # Set up CSV
+    prediction = rf.predict(X_test)
+    prediction_prob = rf.predict_proba(X_test)
+    # Combine customer_id, prediction, and prediction_prob into a pandas DataFrame
+    result_df = pd.DataFrame({
+    'customer_id': test.customer_id,
+    'prediction_prob_1': prediction_prob[:, 1],
+    'prediction': prediction,})
+    # Export the DataFrame as a CSV file
+    result_df.to_csv('result.csv', index=False)
+    return
 
 
 
